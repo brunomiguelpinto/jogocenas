@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KAEL — First Time Experience</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&family=Audiowide&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles/main.css">
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+  <div class="scanlines"></div>
+  <div class="snow-box" id="snowBox"></div>
+
+  <!-- ========== OVERLAY: BOOT ========== -->
+  <div class="overlay" id="ov0">
+    <div class="b-rings">
+      <svg viewBox="0 0 220 220" fill="none">
+        <defs><filter id="gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        <circle id="br1" cx="110" cy="110" r="100" stroke="var(--cy)" stroke-width="1.5" fill="none" stroke-dasharray="628" stroke-dashoffset="628" stroke-linecap="round" opacity="0"/>
+        <g id="br1s" style="transform-origin:110px 110px;opacity:0"><circle cx="110" cy="110" r="106" stroke="var(--cy)" stroke-width=".4" fill="none" opacity=".08" stroke-dasharray="5 20"/></g>
+        <circle id="br2" cx="110" cy="110" r="70" stroke="var(--mg)" stroke-width="1" fill="none" stroke-dasharray="440" stroke-dashoffset="440" stroke-linecap="round" opacity="0"/>
+        <circle id="br3" cx="110" cy="110" r="40" stroke="var(--am)" stroke-width=".8" fill="none" stroke-dasharray="251" stroke-dashoffset="251" stroke-linecap="round" opacity="0"/>
+        <g id="bcore" opacity="0"><circle cx="110" cy="110" r="18" fill="rgba(0,240,255,.03)" stroke="var(--cy)" stroke-width=".4" opacity=".3"/><circle cx="110" cy="110" r="4" fill="var(--cy)" opacity=".15" filter="url(#gl)"/></g>
+      </svg>
+      <div class="b-center">
+        <div class="b-arca" id="bArca">PROJECT ARCA</div>
+        <div class="b-kael" id="bKael">KAEL</div>
+      </div>
+    </div>
+    <div class="b-pbar"><div class="b-pfill" id="bFill"></div></div>
+    <div class="b-lines" id="bLines"></div>
+  </div>
+
+  <!-- ========== OVERLAY: AWAKEN ========== -->
+  <div class="overlay gone" id="ov1">
+    <div class="aw-text" id="awText"></div>
+    <div class="aw-prompt" id="awPrompt">tap to continue</div>
+  </div>
+
+  <!-- ========== GAME UI ========== -->
+  <div class="game-layer" id="gameLayer">
+    <div class="top-bar">
+      <div class="logo">KAEL</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="badge" style="background:rgba(0,240,255,0.06);border:1px solid rgba(0,240,255,0.15);color:var(--cy)">❄ -67°C</div>
+        <div class="badge" style="color:var(--mid)">DAY 1</div>
+      </div>
+    </div>
+
+    <!-- Resources (only energy + speed at start) -->
+    <div class="res-strip" id="resStrip">
+      <div class="res-item r-energy">
+        <div class="res-icon">⚡</div>
+        <div class="res-label">Energy</div>
+        <div class="res-val" id="vEnergy">0</div>
+        <div class="res-rate" style="color:var(--gn)" id="rEnergy">+1.2/s</div>
+      </div>
+      <div class="res-item r-speed">
+        <div class="res-icon">🚄</div>
+        <div class="res-label">Speed</div>
+        <div class="res-val" id="vSpeed">42</div>
+        <div class="res-rate" style="color:var(--cy)">km/h</div>
+      </div>
+    </div>
+
+    <div class="screen-container">
+      <div class="screen" style="opacity:1;pointer-events:all">
+        <div class="train-header">
+          <div class="sec-title">Train</div>
+          <div class="speed-pill" id="speedPill"><div class="speed-dot"></div><span id="speedTxt">42 km/h</span></div>
+        </div>
+
+        <div class="train-scroll">
+          <div class="train-cars" id="trainCars">
+            <div class="car unlocked selected" data-car="generator">
+              <div class="car-emoji">⚡</div>
+              <div class="car-label">Generator</div>
+              <div class="car-lvl" id="genLvl">Lv.1</div>
+            </div>
+            <div class="car-connector"></div>
+            <div class="car locked" data-car="workshop"><div class="car-emoji">🔧</div><div class="car-label">Workshop</div><div class="car-lock">🔒</div></div>
+            <div class="car-connector"></div>
+            <div class="car locked" data-car="water"><div class="car-emoji">💧</div><div class="car-label">Water</div><div class="car-lock">🔒</div></div>
+            <div class="car-connector"></div>
+            <div class="car locked" data-car="greenhouse"><div class="car-emoji">🌱</div><div class="car-label">Greenhouse</div><div class="car-lock">🔒</div></div>
+            <div class="car-connector"></div>
+            <div class="car locked" data-car="lab"><div class="car-emoji">🧪</div><div class="car-label">Lab</div><div class="car-lock">🔒</div></div>
+            <div class="car-connector"></div>
+            <div class="car locked" data-car="hangar"><div class="car-emoji">🛸</div><div class="car-label">Hangar</div><div class="car-lock">🔒</div></div>
+            <div class="car-connector"></div>
+            <div class="car locked" data-car="medbay"><div class="car-emoji">💊</div><div class="car-label">Medbay</div><div class="car-lock">🔒</div></div>
+            <div class="car-connector"></div>
+            <div class="car locked"><div class="car-emoji">❓</div><div class="car-label">???</div><div class="car-lock">🔒</div></div>
+          </div>
+        </div>
+
+        <div class="rail"></div>
+
+        <!-- Generator detail (always visible at start) -->
+        <div class="detail show" id="genPanel">
+          <div class="dt-top">
+            <div>
+              <div class="dt-title" style="color:var(--am)">⚡ Generator</div>
+              <div class="dt-desc">Converts kinetic energy from movement into electricity. The heart of the train.</div>
+            </div>
+            <div class="dt-badge" id="genBadge" style="background:rgba(255,170,0,0.1);color:var(--am)">Lv.1</div>
+          </div>
+          <div class="dt-stats">
+            <div class="dt-stat">
+              <div class="dt-stat-label">Output</div>
+              <div class="dt-stat-val" style="color:var(--am)" id="statOutput">+1.2</div>
+              <div class="dt-stat-sub" style="color:var(--gn)">energy/s</div>
+            </div>
+            <div class="dt-stat">
+              <div class="dt-stat-label">Efficiency</div>
+              <div class="dt-stat-val" style="color:var(--cy)" id="statEff">34%</div>
+              <div class="dt-stat-sub" style="color:var(--lo)">capacity</div>
+            </div>
+          </div>
+          <!-- Status message from FORGE -->
+          <div id="genStatus" style="padding:10px 14px 0;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--lo);line-height:1.6">
+            <span style="color:var(--am)">FORGE:</span> Coils are degraded. They need repair before I can assess anything else.
+          </div>
+
+          <!-- Single active upgrade -->
+          <div class="dt-upgrades">
+            <div class="dt-upg-title">Priority Repair</div>
+            <div id="upgSlot"></div>
+          </div>
+        </div>
+
+        <!-- Locked carriage info (hidden initially) -->
+        <div class="detail" id="lockedPanel">
+          <div class="locked-info">
+            <div class="li-icon" id="liIcon">🔒</div>
+            <div class="li-title" id="liTitle">LOCKED</div>
+            <div class="li-req" id="liReq"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dialogue -->
+    <div class="dlg" id="dlg">
+      <div class="dlg-box">
+        <div class="dlg-portrait">🔧</div>
+        <div class="dlg-who">FORGE</div>
+        <div class="dlg-text" id="dlgText"></div>
+        <div class="dlg-tap">TAP TO CONTINUE ▸</div>
+      </div>
+    </div>
+
+    <!-- Bottom nav -->
+    <div class="bot-nav" id="botNav">
+      <div class="nav-item active"><div class="nav-emoji">🚂</div><div class="nav-label">Train</div></div>
+      <div class="nav-item locked-nav"><div class="nav-emoji">🛸</div><div class="nav-label">Drones</div></div>
+      <div class="nav-item locked-nav"><div class="nav-emoji">🗺️</div><div class="nav-label">Map</div></div>
+      <div class="nav-item locked-nav"><div class="nav-emoji">📡</div><div class="nav-label">ARCA</div></div>
+      <div class="nav-item locked-nav"><div class="nav-emoji">🧠</div><div class="nav-label">KAEL</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/state.js"></script>
+<script src="assets/js/dialogue.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/flow.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
