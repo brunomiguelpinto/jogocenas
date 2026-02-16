@@ -12,7 +12,7 @@ Protótipo de interface narrativa para o jogo KAEL, focado no fluxo inicial (boo
 
 ```text
 jogo/
-├── kael-ftue-v3.html
+├── index.html
 └── assets/
     ├── styles/
     │   └── main.css
@@ -40,7 +40,7 @@ jogo/
 
 Opção simples:
 
-1. Abrir `kael-ftue-v3.html` no browser.
+1. Abrir `index.html` no browser.
 
 Opção recomendada (servidor local):
 
@@ -49,7 +49,7 @@ cd /Users/brunomiguelpinto/Desktop/jogo
 python3 -m http.server 8080
 ```
 
-Depois abrir: `http://localhost:8080/kael-ftue-v3.html`
+Depois abrir: `http://localhost:8080/index.html`
 
 ## Comportamento do loading/boot
 
