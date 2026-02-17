@@ -9,9 +9,11 @@
 
   function init() {
     KAEL.utils.createSnow();
+    KAEL.state.load();
 
     KAEL.ui.bindUpgradeInteractions();
     KAEL.ui.bindCarInteraction();
+    KAEL.ui.syncUnlockedCarriages();
     KAEL.ui.updateUI();
 
     startEnergyTick();

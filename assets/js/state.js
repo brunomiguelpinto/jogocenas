@@ -1,4 +1,5 @@
 (function (KAEL) {
+  var SAVE_KEY = 'kael_save_v1';
   var sourceTracks = KAEL.data.tracks;
 
   function cloneTrack(track) {
@@ -30,6 +31,76 @@
     tracks: sourceTracks.map(cloneTrack),
   };
 
+  function save() {
+    var payload = {
+      energy: state.energy,
+      speed: state.speed,
+      baseOutput: state.baseOutput,
+      tempC: state.tempC,
+      coldLoss: state.coldLoss,
+      tracks: state.tracks.map(function (track) {
+        return { id: track.id, level: track.level };
+      }),
+    };
+
+    try {
+      window.localStorage.setItem(SAVE_KEY, JSON.stringify(payload));
+    } catch (error) {
+      // Ignore storage failures.
+    }
+  }
+
+  function load() {
+    var raw;
+    var parsed;
+
+    try {
+      raw = window.localStorage.getItem(SAVE_KEY);
+      if (!raw) {
+        return false;
+      }
+      parsed = JSON.parse(raw);
+    } catch (error) {
+      return false;
+    }
+
+    if (!parsed || typeof parsed !== 'object') {
+      return false;
+    }
+
+    if (typeof parsed.energy === 'number') {
+      state.energy = Math.max(0, parsed.energy);
+    }
+    if (typeof parsed.speed === 'number') {
+      state.speed = Math.max(0, parsed.speed);
+    }
+    if (typeof parsed.baseOutput === 'number') {
+      state.baseOutput = Math.max(0.1, parsed.baseOutput);
+    }
+    if (typeof parsed.tempC === 'number') {
+      state.tempC = parsed.tempC;
+    }
+    if (typeof parsed.coldLoss === 'number') {
+      state.coldLoss = Math.max(0, parsed.coldLoss);
+    }
+
+    if (Array.isArray(parsed.tracks)) {
+      parsed.tracks.forEach(function (savedTrack) {
+        var track = state.tracks.find(function (item) {
+          return item.id === savedTrack.id;
+        });
+
+        if (!track || typeof savedTrack.level !== 'number') {
+          return;
+        }
+
+        track.level = Math.max(0, Math.min(track.maxLevel, Math.floor(savedTrack.level)));
+      });
+    }
+
+    return true;
+  }
+
   function getTrackCost(track) {
     return Math.floor(track.baseCost * Math.pow(track.costScale, track.level));
   }
@@ -52,6 +123,7 @@
 
   function tickEnergy() {
     state.energy += getEffectiveOutput();
+    save();
   }
 
   function upgrade(index) {
@@ -93,6 +165,8 @@
       state.coldLoss = 0;
     }
 
+    save();
+
     return {
       upgraded: true,
       track: track,
@@ -120,6 +194,8 @@
 
   KAEL.state = {
     state: state,
+    load: load,
+    save: save,
     getTrackCost: getTrackCost,
     isTrackUnlocked: isTrackUnlocked,
     isTrackMaxed: isTrackMaxed,

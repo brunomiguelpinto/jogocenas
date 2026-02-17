@@ -65,10 +65,20 @@
       emoji.style.filter = 'none';
     }
 
-    var level = document.createElement('div');
-    level.className = 'car-lvl';
-    level.textContent = 'Lv.1';
-    carriage.appendChild(level);
+    if (!carriage.querySelector('.car-lvl')) {
+      var level = document.createElement('div');
+      level.className = 'car-lvl';
+      level.textContent = 'Lv.1';
+      carriage.appendChild(level);
+    }
+  }
+
+  function syncUnlockedCarriages() {
+    KAEL.state.state.tracks.forEach(function (track) {
+      if (track.unlocks && KAEL.state.isTrackMaxed(track)) {
+        unlockCarriage(track.unlocks);
+      }
+    });
   }
 
   function handleUpgrade(index) {
@@ -203,10 +213,11 @@
     var currentState = KAEL.state.state;
     var effectiveOutput = KAEL.state.getEffectiveOutput();
     var hasColdLoss = currentState.coldLoss > 0;
+    var speedText = currentState.speed.toFixed(2);
 
     elements.vEnergy.textContent = Math.floor(currentState.energy);
-    elements.vSpeed.textContent = currentState.speed;
-    elements.speedTxt.textContent = currentState.speed + ' km/h';
+    elements.vSpeed.textContent = speedText;
+    elements.speedTxt.textContent = speedText + ' km/h';
     elements.statOutput.textContent = '+' + effectiveOutput.toFixed(1);
     elements.statEff.textContent = KAEL.state.getEfficiency() + '%';
     elements.genLvl.textContent = 'Lv.' + KAEL.state.getGeneratorLevel();
@@ -305,6 +316,7 @@
     flashEnergy: flashEnergy,
     renderUpgrades: renderUpgrades,
     updateUI: updateUI,
+    syncUnlockedCarriages: syncUnlockedCarriages,
     showResources: showResources,
     showBottomNav: showBottomNav,
   };
