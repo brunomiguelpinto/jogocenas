@@ -54,42 +54,37 @@
         speedPerLvl: 20,
         unlockAt: 20,
         unlockedBy: 'thermal',
-        unlocks: 'workshop',
+        unlocks: 'workbench',
         forgeAt: {
-          1: "Generator stable. Workshop is online. This is only baseline — every new carriage will demand more power, and we'll have to push this system further.",
+          1: "Generator stable. Baseline reached. Sensors are coming online and I can read the train properly now: debris everywhere. Good. That debris is material. We'll use it to set up a <em>Workbench</em>.",
         },
       },
     ],
     lockedData: {
-      workshop: {
-        icon: '🔧',
-        title: 'WORKSHOP',
-        req: 'Requires <em>Dynamo Overhaul</em> (Generator fully stable)',
+      workbench: {
+        icon: '🛠️',
+        title: 'WORKBENCH',
+        req: 'Requires <em>Dynamo Overhaul</em> (Generator stable)',
+      },
+      scanner: {
+        icon: '📡',
+        title: 'SCANNER RELAY',
+        req: 'Requires <em>Workbench Lv.1</em>',
       },
       water: {
         icon: '💧',
         title: 'WATER PURIFIER',
-        req: 'Requires <em>Workshop Lv.1</em>',
+        req: 'Requires <em>Scanner Relay</em>',
       },
       greenhouse: {
         icon: '🌱',
         title: 'GREENHOUSE',
-        req: 'Requires <em>Water Purifier</em>',
+        req: 'Requires <em>Water Purifier</em> + stable supplies',
       },
       lab: {
         icon: '🧪',
         title: 'LABORATORY',
-        req: 'Requires <em>Generator Lv.4</em>',
-      },
-      hangar: {
-        icon: '🛸',
-        title: 'DRONE HANGAR',
-        req: 'Requires <em>Workshop Lv.2</em>',
-      },
-      medbay: {
-        icon: '💊',
-        title: 'MEDBAY',
-        req: 'Requires <em>ARCA connection</em>',
+        req: 'Requires <em>Workbench specialization</em>',
       },
     },
     awakenLines: [

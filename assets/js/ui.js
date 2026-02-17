@@ -37,7 +37,7 @@
     }
 
     if (track.id === 'dynamo' && KAEL.state.isTrackMaxed(track)) {
-      statusText = 'Generator stable. Workshop online. Baseline reached, not completion.';
+      statusText = 'Generator stable. Workbench online. Baseline reached, not completion.';
     }
 
     elements.genStatus.innerHTML =
@@ -107,7 +107,7 @@
 
   function upgradeDescription(track) {
     if (track.id === 'dynamo') {
-      return '+5.0 energy/s, +20 km/h — Unlocks Workshop';
+      return '+5.0 energy/s, +20 km/h — Unlocks Workbench';
     }
     if (track.id === 'thermal') {
       return 'Recovers up to -0.3/s cold loss, +0.8 km/h';
