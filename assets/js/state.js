@@ -23,7 +23,10 @@
   var state = {
     energy: 0,
     speed: 42,
-    genOutput: 1.2,
+    baseOutput: 1.2,
+    tempC: -67,
+    coldLoss: 0,
+    maxColdLoss: 0.3,
     tracks: sourceTracks.map(cloneTrack),
   };
 
@@ -48,7 +51,7 @@
   }
 
   function tickEnergy() {
-    state.energy += state.genOutput;
+    state.energy += getEffectiveOutput();
   }
 
   function upgrade(index) {
@@ -65,8 +68,30 @@
 
     state.energy -= cost;
     track.level += 1;
-    state.genOutput += track.energyPerLvl;
+    state.baseOutput += track.energyPerLvl;
     state.speed += track.speedPerLvl;
+
+    if (track.id === 'coils' && isTrackMaxed(track) && state.coldLoss === 0) {
+      state.tempC = -71;
+      state.coldLoss = state.maxColdLoss;
+    }
+
+    if (track.id === 'thermal') {
+      if (state.coldLoss > 0) {
+        state.coldLoss = Math.max(0, state.coldLoss - state.maxColdLoss / track.maxLevel);
+      }
+
+      if (isTrackMaxed(track)) {
+        state.tempC = -69;
+      } else {
+        state.tempC = track.level % 2 === 0 ? -70 : -72;
+      }
+    }
+
+    if (track.id === 'dynamo' && isTrackMaxed(track)) {
+      state.tempC = -67;
+      state.coldLoss = 0;
+    }
 
     return {
       upgraded: true,
@@ -77,15 +102,20 @@
   }
 
   function getEfficiency() {
-    var totalLvl = state.tracks.reduce(function (acc, track) {
+    var baseEfficiency = state.tracks.reduce(function (acc, track) {
       return acc + track.level;
-    }, 0);
+    }, 0) * 0.85 + 34;
 
-    return Math.min(99, Math.round(34 + totalLvl * 0.85));
+    var coldPenalty = Math.round(state.coldLoss * 35);
+    return Math.max(10, Math.min(99, Math.round(baseEfficiency - coldPenalty)));
   }
 
   function getGeneratorLevel() {
     return state.tracks[0].level + 1;
+  }
+
+  function getEffectiveOutput() {
+    return Math.max(0.1, state.baseOutput - state.coldLoss);
   }
 
   KAEL.state = {
@@ -97,5 +127,6 @@
     upgrade: upgrade,
     getEfficiency: getEfficiency,
     getGeneratorLevel: getGeneratorLevel,
+    getEffectiveOutput: getEffectiveOutput,
   };
 })(window.KAEL || (window.KAEL = {}));

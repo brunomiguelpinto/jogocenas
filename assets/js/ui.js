@@ -9,6 +9,7 @@
     genLvl: document.getElementById('genLvl'),
     genBadge: document.getElementById('genBadge'),
     rEnergy: document.getElementById('rEnergy'),
+    tempBadge: document.getElementById('tempBadge'),
     genStatus: document.getElementById('genStatus'),
     genPanel: document.getElementById('genPanel'),
     lockedPanel: document.getElementById('lockedPanel'),
@@ -20,13 +21,28 @@
   };
 
   function updateGeneratorStatus(track) {
+    var currentState = KAEL.state.state;
+    var statusText = track.name + ' — Lv.' + track.level + '/' + track.maxLevel;
+
+    if (track.id === 'coils' && KAEL.state.isTrackMaxed(track) && currentState.coldLoss > 0) {
+      statusText = 'Temperature dropping. Coils are holding, but we are losing heat in the turbine housing.';
+    }
+
+    if (track.id === 'thermal' && !KAEL.state.isTrackMaxed(track) && currentState.coldLoss > 0) {
+      statusText = 'Insulation in progress. Recovering output from cold loss.';
+    }
+
+    if (track.id === 'thermal' && KAEL.state.isTrackMaxed(track)) {
+      statusText = "Thermals stable. Dynamo vibration is now the critical fault.";
+    }
+
+    if (track.id === 'dynamo' && KAEL.state.isTrackMaxed(track)) {
+      statusText = 'Generator stable. Workshop online. Baseline reached, not completion.';
+    }
+
     elements.genStatus.innerHTML =
       '<span style="color:var(--am)">FORGE:</span> ' +
-      track.name +
-      ' — Lv.' +
-      track.level +
-      '/' +
-      track.maxLevel;
+      statusText;
   }
 
   function unlockCarriage(carriageId) {
@@ -82,6 +98,9 @@
   function upgradeDescription(track) {
     if (track.id === 'dynamo') {
       return '+5.0 energy/s, +20 km/h — Unlocks Workshop';
+    }
+    if (track.id === 'thermal') {
+      return 'Recovers up to -0.3/s cold loss, +0.8 km/h';
     }
 
     var energyPart = track.energyPerLvl > 0 ? '+' + track.energyPerLvl.toFixed(2) + ' energy/s' : '';
@@ -182,15 +201,40 @@
 
   function updateUI() {
     var currentState = KAEL.state.state;
+    var effectiveOutput = KAEL.state.getEffectiveOutput();
+    var hasColdLoss = currentState.coldLoss > 0;
 
     elements.vEnergy.textContent = Math.floor(currentState.energy);
     elements.vSpeed.textContent = currentState.speed;
     elements.speedTxt.textContent = currentState.speed + ' km/h';
-    elements.statOutput.textContent = '+' + currentState.genOutput.toFixed(1);
+    elements.statOutput.textContent = '+' + effectiveOutput.toFixed(1);
     elements.statEff.textContent = KAEL.state.getEfficiency() + '%';
     elements.genLvl.textContent = 'Lv.' + KAEL.state.getGeneratorLevel();
     elements.genBadge.textContent = 'Lv.' + KAEL.state.getGeneratorLevel();
-    elements.rEnergy.textContent = '+' + currentState.genOutput.toFixed(1) + '/s';
+    elements.tempBadge.textContent = '❄ ' + currentState.tempC + '°C';
+
+    if (currentState.tempC <= -71) {
+      elements.tempBadge.style.color = 'var(--rd)';
+      elements.tempBadge.style.borderColor = 'rgba(255,51,68,0.4)';
+      elements.tempBadge.style.background = 'rgba(255,51,68,0.1)';
+    } else {
+      elements.tempBadge.style.color = 'var(--cy)';
+      elements.tempBadge.style.borderColor = 'rgba(0,240,255,0.15)';
+      elements.tempBadge.style.background = 'rgba(0,240,255,0.06)';
+    }
+
+    if (hasColdLoss) {
+      elements.rEnergy.textContent =
+        '+' +
+        effectiveOutput.toFixed(1) +
+        '/s (-' +
+        currentState.coldLoss.toFixed(1) +
+        '/s cold loss)';
+      elements.rEnergy.style.color = 'var(--am)';
+    } else {
+      elements.rEnergy.textContent = '+' + effectiveOutput.toFixed(1) + '/s';
+      elements.rEnergy.style.color = 'var(--gn)';
+    }
 
     renderUpgrades();
   }
