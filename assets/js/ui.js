@@ -270,6 +270,13 @@
 
   function bindCarInteraction() {
     var lockedData = KAEL.data.lockedData;
+    var onlineData = {
+      workbench: {
+        icon: '🛠️',
+        title: 'WORKBENCH ONLINE',
+        req: 'Basic fabrication station is active. Scrap processing systems will be connected in the next phase.',
+      },
+    };
 
     document.querySelectorAll('.car').forEach(function (car) {
       car.addEventListener('click', function () {
@@ -282,6 +289,13 @@
           item.classList.remove('selected');
         });
 
+        if (id === 'generator') {
+          car.classList.add('selected');
+          elements.lockedPanel.classList.remove('show');
+          elements.genPanel.classList.add('show');
+          return;
+        }
+
         if (car.classList.contains('locked') && lockedData[id]) {
           car.classList.add('selected');
           elements.genPanel.classList.remove('show');
@@ -293,11 +307,23 @@
           return;
         }
 
-        if (id === 'generator') {
+        if (onlineData[id]) {
           car.classList.add('selected');
-          elements.lockedPanel.classList.remove('show');
-          elements.genPanel.classList.add('show');
+          elements.genPanel.classList.remove('show');
+          elements.lockedPanel.classList.add('show');
+
+          elements.liIcon.textContent = onlineData[id].icon;
+          elements.liTitle.textContent = onlineData[id].title;
+          elements.liReq.innerHTML = onlineData[id].req;
+          return;
         }
+
+        car.classList.add('selected');
+        elements.genPanel.classList.remove('show');
+        elements.lockedPanel.classList.add('show');
+        elements.liIcon.textContent = '⚠️';
+        elements.liTitle.textContent = 'SYSTEM NOT IMPLEMENTED';
+        elements.liReq.innerHTML = 'This carriage is unlocked visually but has no interaction yet.';
       });
     });
   }
